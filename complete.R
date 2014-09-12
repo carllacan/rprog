@@ -12,9 +12,13 @@ complete <- function(directory, id = 1:332) {
   ## ...
   ## where 'id' is the monitor ID number and 'nobs' is the
   ## number of complete cases
-  
+  lastwd = getwd()
   setwd(directory)
   getfilename = function(num) paste(paste(rep("0", 3-nchar(num)),collapse=""), num, ".csv", sep="")
   files <- lapply(id, function(num) read.csv(getfilename(num)))  
-  obs = files[which(!is.na(files$sulfate)&!is.na(files$nitrate)),]
-  obs_num = sum(sapply(obs, length))
+  setwd(lastwd)
+  
+  obs = lapply(files, function(df) df[which(!is.na(df$sulfate)&!is.na(df$nitrate)),])
+  nobs = (sapply(obs, nrow))
+  return(data.frame(id, nobs))
+}
