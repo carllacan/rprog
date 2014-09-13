@@ -12,12 +12,15 @@ corr <- function(directory, threshold = 0) {
   lastwd = getwd()
   setwd(directory)
   getfilename = function(num) paste(paste(rep("0", 3-nchar(num)),collapse=""), num, ".csv", sep="")
-  files <- lapply(id, function(num) read.csv(getfilename(num)))  
+  files <- lapply(1:332, function(num) read.csv(getfilename(num)))  
   setwd(lastwd)
   
   source("complete.R")
   nobs = complete(directory)
   comp = files[which(nobs$nobs>threshold)]
+  if (!length(comp)) {
+    return(c())
+  }
   data = lapply(comp, function(df) cbind(df$sulfate, df$nitrate))
   cors = sapply(data, function(df) cor(df, use="pairwise.complete.obs")[[1,2]])  
 }
